@@ -1,24 +1,35 @@
-import React from 'react';
+import * as React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 // Passo 1: Definir um "contrato" (type) para as props que o componente espera receber.
 // Isso garante que você sempre passará os dados corretos.
 type ProfileCardProps = {
   nome: string;
-  descricao: string;
+  descricao?: string;
   imagemUrl: string;
+  compact?: boolean; // quando usado como cabeçalho do post
 };
 
-// Passo 2: Usar o tipo definido para tipar as props do componente.
-const ProfileCard: React.FC<ProfileCardProps> = ({ nome, descricao, imagemUrl }) => {
+// ProfileCard agora suporta um modo 'compact' para atuar como cabeçalho de post (avatar + nome)
+const ProfileCard: React.FC<ProfileCardProps> = ({ nome, descricao, imagemUrl, compact = true }: ProfileCardProps) => {
+  if (compact) {
+    return (
+      <View style={styles.header}>
+        <Image style={styles.avatar} source={{ uri: imagemUrl }} />
+        <View style={styles.headerText}>
+          <Text style={styles.cardTitle}>{nome}</Text>
+          {descricao ? <Text style={styles.cardDescription}>{descricao}</Text> : null}
+        </View>
+        <Text style={styles.more}>⋯</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.card}>
-      <Image
-        style={styles.cardImage}
-        source={{ uri: imagemUrl }}
-      />
+      <Image style={styles.cardImage} source={{ uri: imagemUrl }} />
       <Text style={styles.cardTitle}>{nome}</Text>
-      <Text style={styles.cardDescription}>{descricao}</Text>
+      {descricao ? <Text style={styles.cardDescription}>{descricao}</Text> : null}
     </View>
   );
 };
@@ -43,15 +54,35 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: '#111',
   },
   cardDescription: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     textAlign: 'center',
     marginTop: 5,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 12,
+  },
+  headerText: {
+    flex: 1,
+  },
+  more: {
+    fontSize: 20,
+    color: '#666',
+    paddingHorizontal: 8,
   },
 });
 

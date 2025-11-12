@@ -1,75 +1,107 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Post from '../../components/Post';
 
 export default function HomeScreen() {
+ 
+  const localImages = [
+    { src: require('../../assets/images/1.jpg'), title: '1.jpg' },
+    { src: require('../../assets/images/2.jpg'), title: '2.jpg' },
+    { src: require('../../assets/images/3.jpg'), title: '3.jpg' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.11_12a58d12.jpg'), title: 'WhatsApp 11.09.11' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.12_2ebfdca2.jpg'), title: 'WhatsApp 11.09.12 a' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.12_54da44d2.jpg'), title: 'WhatsApp 11.09.12 b' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.13_06d5f24f.jpg'), title: 'WhatsApp 11.09.13 a' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.13_d7ad2b92.jpg'), title: 'WhatsApp 11.09.13 b' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.14_9dc760c5.jpg'), title: 'WhatsApp 11.09.14 a' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.14_f7631258.jpg'), title: 'WhatsApp 11.09.14 b' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.15_e6392ca0.jpg'), title: 'WhatsApp 11.09.15 a' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.15_f5c0d921.jpg'), title: 'WhatsApp 11.09.15 b' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.15_fe602611.jpg'), title: 'WhatsApp 11.09.15 c' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.16_9057b1d6.jpg'), title: 'WhatsApp 11.09.16 a' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.16_d871bc50.jpg'), title: 'WhatsApp 11.09.16 b' },
+    { src: require('../../assets/images/Imagem do WhatsApp de 2025-11-10 à(s) 14.09.17_a9ea7630.jpg'), title: 'WhatsApp 11.09.17' },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.logoRow}>
-            <Ionicons name="heart" size={36} color="#e1306c" />
+            <Image
+              source={require('../../assets/images/splash-icon.png')}
+              style={styles.logo}
+            />
+            <View style={styles.logoTextContainer}>
+              <Text style={styles.logoTitle}>Concurso Definitivo de poses</Text>
+              <Text style={styles.logoSubtitle}>do willem dafoe</Text>
+            </View>
           </View>
 
-          {/* Stories fictícios (apenas visual) */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.storiesScroll}>
-            {[
-              { name: 'Mariana', avatar: 'https://i.pravatar.cc/100?img=32' },
-              { name: 'Lucas', avatar: 'https://i.pravatar.cc/100?img=12' },
-              { name: 'Ana', avatar: 'https://i.pravatar.cc/100?img=5' },
-              { name: 'Milena', avatar: 'https://i.pravatar.cc/100?img=20' },
-              { name: 'Mariana L.', avatar: 'https://i.pravatar.cc/100?img=30' },
-              { name: 'Pedro', avatar: 'https://i.pravatar.cc/100?img=11' },
-            ].map((s, i) => (
-              <View key={i} style={styles.storyItem}>
-                <View style={styles.storyCircle}>
-                  <Image source={{ uri: s.avatar }} style={styles.storyAvatar} />
-                </View>
-                <Text style={styles.storyLabel}>{s.name}</Text>
-              </View>
-            ))}
-          </ScrollView>
+          {/* Galeria local (cada imagem como um Post, mesmo estilo dos outros posts) */}
+          <View style={{ marginBottom: 12 }}>
+            {localImages.map((img, idx) => {
+              // Obter URI de forma segura para web e native.
+              let uri = '';
+              try {
+                if (typeof img.src === 'string') {
+                  uri = img.src;
+                } else if (img.src && typeof img.src === 'object' && 'uri' in img.src) {
+                  // já é um objeto asset
+                  // @ts-ignore
+                  uri = img.src.uri;
+                } else if (typeof Image.resolveAssetSource === 'function') {
+                  const resolved = Image.resolveAssetSource(img.src as any);
+                  uri = resolved && resolved.uri ? resolved.uri : '';
+                } else if (img.src != null) {
+                  // fallback: attempt to stringify (some bundlers return a string path)
+                  // @ts-ignore
+                  uri = String(img.src);
+                }
+              } catch (e) {
+                uri = '';
+              }
 
-          <Post
-            nomeAutor="Mariana Souza"
-            urlAvatar="https://i.pravatar.cc/150?img=32"
-            urlImagemPost="https://plus.unsplash.com/premium_photo-1667843649659-d77cbfd16475?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=464"
-            descricao="Fim de semana perfeito para uma trilha no meio da natureza 🌲🚶‍♀️"
-            curtidasIniciais={0}
-          />
+              const avatar = `https://api.dicebear.com/6.x/bottts/png?seed=robot-tds-${idx}&size=150`;
+              const num = idx + 1;
+              let descricao = `Imagem ${num}`;
 
-          <Post
-            nomeAutor="Lucas Pereira"
-            urlAvatar="https://i.pravatar.cc/150?img=12"
-            urlImagemPost="https://images.unsplash.com/photo-1566837945700-30057527ade0?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870"
-            descricao="Café & Código ☕💻"
-            curtidasIniciais={0}
-          />
+              // Apply user-specified labels/names
+              const alineSet = new Set([1, 2, 3, 4, 11, 12, 13, 14, 15]);
+              const arthurSet = new Set([5, 6, 7]);
+              const nelsonSet = new Set([8, 10]);
+              const lukaSet = new Set([9, 16]);
 
-            <Post
-              nomeAutor="Ana Costa"
-              urlAvatar="https://i.pravatar.cc/150?img=5"
-              urlImagemPost="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200&auto=format&fit=crop&q=80"
-              descricao="Do catolicismo só gosto do pecado e do vinho 🍷🍇"
-              curtidasIniciais={0}
-            />
+              if (arthurSet.has(num)) {
+                descricao = `${descricao} — ARTHUR`;
+              } else if (nelsonSet.has(num)) {
+                descricao = `${descricao} — NELSON`;
+              } else if (lukaSet.has(num)) {
+                descricao = `${descricao} — LUKA`;
+              } else if (alineSet.has(num)) {
+                descricao = `${descricao} — ALINE`;
+              }
 
-            <Post
-              nomeAutor="Milena Torres"
-              urlAvatar="https://i.pravatar.cc/150?img=20"
-              urlImagemPost="https://plus.unsplash.com/premium_photo-1663840175543-6eb0f4a25401?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=387"
-              descricao="Experimentando novas receitas. Hoje: brownie! 🍫"
-              curtidasIniciais={0}
-            />
+              return (
+                <Post
+                  key={`local-${idx}`}
+                  nomeAutor={'TDS'}
+                  urlAvatar={avatar}
+                  urlImagemPost={uri}
+                  descricao={descricao}
+                  curtidasIniciais={0}
+                />
+              );
+            })}
+          </View>
 
-            <Post
-              nomeAutor="Mariana Lima"
-              urlAvatar="https://i.pravatar.cc/150?img=30"
-              urlImagemPost="https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=1200&auto=format&fit=crop&q=80"
-              descricao="A natureza é o melhor remédio para a alma 🌿"
-              curtidasIniciais={0}
-            />
+
+          
+
+        
+
+
+          
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -87,13 +119,31 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logoRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+    justifyContent: 'flex-start',
   },
   logo: {
-    width: 120,
-    height: 36,
+    width: 140,
+    height: 80,
     resizeMode: 'contain',
+  },
+  logoTextContainer: {
+    marginLeft: 12,
+    flexShrink: 1,
+  },
+  logoTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  logoSubtitle: {
+    color: '#fff',
+    fontSize: 14,
+    marginTop: 2,
+    textTransform: 'uppercase',
   },
   storiesScroll: {
     marginBottom: 12,
@@ -123,5 +173,9 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     color: '#fff',
+  },
+  galleryScroll: {
+    marginTop: 8,
+    marginBottom: 8,
   },
 });

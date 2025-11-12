@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 import PostActions from './PostActions';
 import ProfileCard from './ProfileCard';
@@ -15,6 +15,35 @@ type PostProps = {
 const Post: React.FC<PostProps> = ({ nomeAutor, urlAvatar, urlImagemPost, descricao, curtidasIniciais }: PostProps) => {
   const [imageUri] = useState<string>(urlImagemPost);
   const [imageFailed, setImageFailed] = useState<boolean>(false);
+  const [aspectRatio, setAspectRatio] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    let mounted = true;
+    const uri = imageUri;
+    if (!uri) return;
+
+    // Try to get image dimensions for remote/local URIs
+    try {
+      if (typeof Image.getSize === 'function') {
+        Image.getSize(
+          uri,
+          (width, height) => {
+            if (mounted && width && height) setAspectRatio(width / height);
+          },
+          () => {
+            if (mounted) setAspectRatio(undefined);
+          }
+        );
+      }
+    } catch (e) {
+      // ignore, will fall back to fixed height
+      if (mounted) setAspectRatio(undefined);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [imageUri]);
 
   return (
     <View style={styles.postContainer}>
@@ -22,7 +51,11 @@ const Post: React.FC<PostProps> = ({ nomeAutor, urlAvatar, urlImagemPost, descri
 
       <Image
         source={imageFailed ? require('../assets/images/react-logo.png') : { uri: imageUri }}
-        style={styles.postImage}
+        style={[
+          styles.postImage,
+          aspectRatio ? { aspectRatio } : { height: 300 },
+        ]}
+        resizeMode={aspectRatio ? 'contain' : 'cover'}
         onError={() => setImageFailed(true)}
       />
 
